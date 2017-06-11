@@ -19,93 +19,45 @@ namespace ConsoleApp2
         int skip = 0;
         int priceSize = 4696;
         string filePath = "";
+        string strPath = @"c:\temp\";
+        string fileName = "MyTest.csv";
         public Form1()
         {
             InitializeComponent();
+            initBackgroundWorker();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            ColumnHeader header1 = new ColumnHeader();
-            header1.Text = "";
-            header1.TextAlign = HorizontalAlignment.Left;
-            header1.Width = 700;
-            listView1.Columns.Add(header1);
-            listView1.View = View.Details;
-
-           
-
+            
         }
-
-        
-        
-
-        public class Company : IComparable<Company>
+        private BackgroundWorker bw;
+        private void initBackgroundWorker()
         {
-            double compare = 0;
-            double rateOfReturn = -1;
-            double[] companyPrice;
-            int initIndex = 0;
-            public Company(double[] companyPrice, int observation, int holding, int skip)
-            {
-                this.companyPrice = companyPrice;
-                computeCompareValue(this.companyPrice, observation);
-                computeRateOfReturn(this.companyPrice, observation, holding, skip);
-            }
-            public void reload(int initIndex,int observation, int holding, int skip)
-            {
-                this.initIndex = initIndex;
-                computeCompareValue(this.companyPrice, observation);
-                computeRateOfReturn(this.companyPrice, observation, holding, skip);
-            }
-
-
-            int IComparable<Company>.CompareTo(Company other)
-            {
-                return compare - other.compare > 0 ? 1 : compare - other.compare == 0 ? 0 : -1;
-            }
-
-            private void computeCompareValue(double[] companyPrice, int observation)
-            {
-                double max = 0;
-                int size = Math.Min(observation+ initIndex, companyPrice.Length);
-                for (int i = initIndex; i < size; i++)
-                {
-                    if (companyPrice[i] > max)
-                    {
-                        max = companyPrice[i];
-                    }
-                }
-                compare = companyPrice[initIndex+observation - 1] / max;
-            }
-            private void computeRateOfReturn(double[] companyPrice, int observation, int holding, int skip)
-            {
-                int first = Math.Min((initIndex + observation + skip -1), companyPrice.Length);
-                int last = Math.Min((initIndex + observation + skip + holding-1), companyPrice.Length);
-                rateOfReturn = (companyPrice[last] - companyPrice[first]) / companyPrice[first];
-
-            }
-
-            public string getString()
-            {
-                return "compare :" + compare + ", rate : " + rateOfReturn;
-            }
-            public bool hasZero(int observation)
-            {
-                int size = Math.Min(companyPrice.Length, observation + initIndex);
-                for (int i = initIndex; i < size; i++)
-                {
-                    if (companyPrice[i] == 0)
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-
+            bw = new BackgroundWorker();
+            bw.WorkerReportsProgress = true;
+            bw.WorkerSupportsCancellation = true;
+            bw.DoWork += new DoWorkEventHandler(bw_DoWork);
+            bw.ProgressChanged += new ProgressChangedEventHandler(bw_ProgressChanged);
+            bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
         }
 
+        private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            label6.Text = "完成";
+            progressBar1.Value = 100;
+        }
+
+        private void bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            progressBar1.Value = e.ProgressPercentage;
+            label6.Text = e.ProgressPercentage.ToString() + " %";
+        }
+
+        private void bw_DoWork(object sender, DoWorkEventArgs e)
+        {
+            loadDataAndCompute();
+        }
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -114,23 +66,30 @@ namespace ConsoleApp2
             if (f.ShowDialog() == DialogResult.OK)
             {
                 filePath = f.FileName;
-                loadDataAndCompute();
+                bw.RunWorkerAsync();
             }
 
         }
         private void loadDataAndCompute()
         {
+            initValueFromTable();
+            createCompanyTableFromFile();
+            computeAndWriteData();
+        }
+        private void initValueFromTable()
+        {
+            fileName = textBox4.Text;
+            strPath = strPath + fileName;
+            if (File.Exists(strPath))
+            {
+                File.Delete(strPath);
+            }
             observation = Convert.ToInt32(textBox1.Text);
             skip = Convert.ToInt32(textBox2.Text);
             holding = Convert.ToInt32(textBox3.Text);
-            listView1.Clear();
-            ColumnHeader header1 = new ColumnHeader();
-            header1.Text = "內容";
-            header1.TextAlign = HorizontalAlignment.Left;
-            header1.Width = 700;
-            listView1.Columns.Add(header1);
-            listView1.View = View.Details;
-            StringBuilder sb = new StringBuilder();
+        }
+        private void createCompanyTableFromFile()
+        {
             string line;
             companys.Clear();
             StreamReader sr = new StreamReader(filePath);
@@ -147,13 +106,15 @@ namespace ConsoleApp2
                 }
                 companys.Add(new Company(tempDouble, observation, holding, skip));
             }
-            
+        }
+        private void computeAndWriteData()
+        {
+            FileStream fs = File.Create(strPath);//new FileStream(strPath, FileMode.Open, FileAccess.Write);
+            StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
+            StringBuilder sb = new StringBuilder();
             int initIndex = 0;
             while (initIndex + observation + skip + holding < priceSize)
             {
-                ListViewItem i = new ListViewItem();
-                i.Text = "-------"+ initIndex + "---------";
-                listView1.Items.Add(i);
                 foreach (Company c in companys)
                 {
                     c.reload(initIndex, observation, holding, skip);
@@ -167,20 +128,28 @@ namespace ConsoleApp2
                     }
                 }
                 tempCompanys.Sort();
-                foreach (Company c in tempCompanys)
+                int winner = (int)(tempCompanys.Count() * 1);
+                for (int j = 1; j <= winner; j++)
                 {
-                    ListViewItem ii = new ListViewItem();
-                    ii.Text = c.getString();
-                    listView1.Items.Add(ii);
+                    Company c = tempCompanys[tempCompanys.Count() - j];
+                    sw.Write(c.getRate() + ",");
                 }
+                sw.Write("\n");
                 initIndex++;
+                bw.ReportProgress((int)((double)initIndex * 100.0/(double)priceSize));
             }
-
+            sw.Close();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            loadDataAndCompute();
+            bw.RunWorkerAsync();
         }
+
+       
+
+       
+
+        
     }
 }
