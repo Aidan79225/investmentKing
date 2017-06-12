@@ -18,7 +18,10 @@ namespace ConsoleApp2
         int holding = 1;
         int skip = 0;
         int priceSize = 4696;
+        int top = 0;
+        int winnerP = 30;
         string filePath = "";
+        string topFilePath = "";
         string strPath = @"c:\temp\";
         string fileName = "MyTest.csv";
         public Form1()
@@ -40,6 +43,7 @@ namespace ConsoleApp2
             bw.DoWork += new DoWorkEventHandler(bw_DoWork);
             bw.ProgressChanged += new ProgressChangedEventHandler(bw_ProgressChanged);
             bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
+            
         }
 
         private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -47,18 +51,32 @@ namespace ConsoleApp2
             label6.Text = "完成";
             progressBar1.Value = 100;
         }
-
+        string type = "top";
         private void bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             progressBar1.Value = e.ProgressPercentage;
-            label6.Text = e.ProgressPercentage.ToString() + " %";
+            if (e.ProgressPercentage < 0.1)
+            {
+                label6.Text = "已讀取" + companys.Count + "間公司資訊";
+            }
+            else
+            {
+                if (type.Equals("top"))
+                {
+                    label6.Text = "讀取TOP中 " + e.ProgressPercentage.ToString() + " %";
+                }
+                else
+                {
+                    label6.Text = "計算中 " + e.ProgressPercentage.ToString() + " %";
+                }
+                
+            }
         }
 
         private void bw_DoWork(object sender, DoWorkEventArgs e)
         {
             loadDataAndCompute();
         }
-
         private void button1_Click(object sender, EventArgs e)
         {
             
@@ -79,14 +97,16 @@ namespace ConsoleApp2
         private void initValueFromTable()
         {
             fileName = textBox4.Text;
-            strPath = strPath + fileName;
-            if (File.Exists(strPath))
+            string output = strPath + fileName;
+            if (File.Exists(output))
             {
-                File.Delete(strPath);
+                File.Delete(output);
             }
             observation = Convert.ToInt32(textBox1.Text);
             skip = Convert.ToInt32(textBox2.Text);
             holding = Convert.ToInt32(textBox3.Text);
+            top = Convert.ToInt32(textBox5.Text);
+            winnerP = Convert.ToInt32(textBox6.Text);
         }
         private void createCompanyTableFromFile()
         {
@@ -105,11 +125,34 @@ namespace ConsoleApp2
                     priceIndex++;
                 }
                 companys.Add(new Company(tempDouble, observation, holding, skip));
+                bw.ReportProgress(0);
             }
+            sr.Close();
+            if (topFilePath.Equals("")) return;
+            sr = new StreamReader(topFilePath);
+            int index = 0;
+            while ((line = sr.ReadLine()) != null)
+            {
+                string[] h = line.Split(',');
+                priceSize = h.Length;
+                int[] tempInt = new int[priceSize];
+                int priceIndex = 0;
+                foreach (string t in h)
+                {
+                    tempInt[priceIndex] = Convert.ToInt32(t);
+                    priceIndex++;
+                }
+                companys[index++].setTop(tempInt);
+                Console.WriteLine(index);
+                bw.ReportProgress((int)((double)index * 100.0 / (double)companys.Count()));
+            }
+            type = "";
+
         }
         private void computeAndWriteData()
         {
-            FileStream fs = File.Create(strPath);//new FileStream(strPath, FileMode.Open, FileAccess.Write);
+            string output = strPath + fileName;
+            FileStream fs = File.Create(output);//new FileStream(strPath, FileMode.Open, FileAccess.Write);
             StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
             StringBuilder sb = new StringBuilder();
             int initIndex = 0;
@@ -122,17 +165,27 @@ namespace ConsoleApp2
                 List<Company> tempCompanys = new List<Company>();
                 foreach (Company c in companys)
                 {
-                    if (!c.hasZero(observation))
+                    if (!c.hasZero(observation + skip + 1))
                     {
                         tempCompanys.Add(c);
                     }
                 }
                 tempCompanys.Sort();
-                int winner = (int)(tempCompanys.Count() * 1);
+                int winner = (int)(tempCompanys.Count() * winnerP / 100);
                 for (int j = 1; j <= winner; j++)
                 {
                     Company c = tempCompanys[tempCompanys.Count() - j];
-                    sw.Write(c.getRate() + ",");
+                    if (c.hasTop()) {
+                        if (c.getTop(initIndex + observation + skip - 1) >= top)
+                        {
+                            sw.Write(c.getRate() + ",");
+                        }
+                    }
+                    else
+                    {
+                        sw.Write(c.getRate() + ",");
+                    }
+                    
                 }
                 sw.Write("\n");
                 initIndex++;
@@ -146,10 +199,13 @@ namespace ConsoleApp2
             bw.RunWorkerAsync();
         }
 
-       
-
-       
-
-        
+        private void button3_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog f = new OpenFileDialog();
+            if (f.ShowDialog() == DialogResult.OK)
+            {
+                topFilePath = f.FileName;
+            }
+        }
     }
 }
