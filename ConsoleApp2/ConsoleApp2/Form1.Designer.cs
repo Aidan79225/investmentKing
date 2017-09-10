@@ -43,16 +43,15 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.textBox5 = new System.Windows.Forms.TextBox();
-            this.button3 = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(249, 575);
+            this.button1.Location = new System.Drawing.Point(183, 575);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(92, 40);
+            this.button1.Size = new System.Drawing.Size(133, 40);
             this.button1.TabIndex = 1;
             this.button1.Text = "開啟輸入檔案";
             this.button1.UseVisualStyleBackColor = true;
@@ -128,7 +127,7 @@
             // 
             this.button2.Location = new System.Drawing.Point(17, 573);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(92, 42);
+            this.button2.Size = new System.Drawing.Size(132, 42);
             this.button2.TabIndex = 9;
             this.button2.Text = "計算";
             this.button2.UseVisualStyleBackColor = true;
@@ -188,17 +187,7 @@
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(133, 39);
             this.textBox5.TabIndex = 15;
-            this.textBox5.Text = "1";
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(137, 575);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(92, 40);
-            this.button3.TabIndex = 16;
-            this.button3.Text = "開啟Top檔案";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.textBox5.Text = "0";
             // 
             // label8
             // 
@@ -226,7 +215,6 @@
             this.ClientSize = new System.Drawing.Size(353, 662);
             this.Controls.Add(this.textBox6);
             this.Controls.Add(this.label8);
-            this.Controls.Add(this.button3);
             this.Controls.Add(this.textBox5);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
@@ -266,7 +254,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textBox5;
-        private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox textBox6;
     }

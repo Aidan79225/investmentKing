@@ -8,27 +8,43 @@ namespace ConsoleApp2
 {
     public class Company : IComparable<Company>
     {
+        double remuneration = 0.0;
         double compare = 0;
         double rateOfReturn = -1;
-        double[] companyPrice;
+        public double[] companyPrice;
         int initIndex = 0;
         int[] top;
+        double size = 0.0;
         public Company(double[] companyPrice, int observation, int holding, int skip)
         {
             this.companyPrice = companyPrice;
             computeCompareValue(this.companyPrice, observation);
             computeRateOfReturn(this.companyPrice, observation, holding, skip);
+            computeRemuneration(this.companyPrice, observation, holding, skip);
         }
         public void reload(int initIndex, int observation, int holding, int skip)
         {
             this.initIndex = initIndex;
             computeCompareValue(this.companyPrice, observation);
             computeRateOfReturn(this.companyPrice, observation, holding, skip);
+            computeRemuneration(this.companyPrice, observation, holding, skip);
         }
-
-        public void setTop(int[] top)
+        public void computeTop()
         {
-            this.top = top;
+            if (companyPrice.Length == 0) return;
+            top = new int[companyPrice.Length];
+            top[0] = 0;
+            for (int i = 1 ; i< companyPrice.Length ; i++)
+            {
+                if (companyPrice[i] > companyPrice[i-1] )
+                {
+                    top[i] = top[i - 1] + 1;
+                }
+                else
+                {
+                    top[i] = 0;
+                }
+            }
         }
         public int getTop(int index)
         {
@@ -61,11 +77,28 @@ namespace ConsoleApp2
             int first = Math.Min((initIndex + observation + skip - 1), companyPrice.Length);
             int last = Math.Min((initIndex + observation + skip + holding - 1), companyPrice.Length);
             rateOfReturn = (companyPrice[last] - companyPrice[first]) / companyPrice[first];
-
+        }
+        private void computeRemuneration(double[] companyPrice, int observation, int holding, int skip) {
+            int last = Math.Min((initIndex + observation + skip + holding - 2), companyPrice.Length);
+            int first = Math.Max(Math.Min(last-4, companyPrice.Length),0);
+            remuneration = (companyPrice[last] - companyPrice[first]) / companyPrice[first];
+            if (companyPrice[first] == 0) remuneration = 0;
         }
         public double getRate()
         {
             return rateOfReturn;
+        }
+        public double getCompare()
+        {
+            return compare;
+        }
+        public double getRemuneration()
+        {
+            return remuneration;
+        }
+        public double getSize()
+        {
+            return size;
         }
         public string getString()
         {
