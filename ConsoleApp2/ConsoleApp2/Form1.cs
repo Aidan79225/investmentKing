@@ -23,8 +23,11 @@ namespace ConsoleApp2
         int top = 0;
         int winnerP = 30;
         string filePath = "";
+        string sizeFilePath = "";
         string strPath = @"c:\temp\";
         string fileName = "MyTest.csv";
+        const string COMPARE = "compare-";
+        const string REGRESSION = "regression-";
         public Form1()
         {
             InitializeComponent();
@@ -33,7 +36,7 @@ namespace ConsoleApp2
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            
+
         }
         private BackgroundWorker bw;
         private void initBackgroundWorker()
@@ -44,7 +47,7 @@ namespace ConsoleApp2
             bw.DoWork += new DoWorkEventHandler(bw_DoWork);
             bw.ProgressChanged += new ProgressChangedEventHandler(bw_ProgressChanged);
             bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
-            
+
         }
 
         private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -70,7 +73,7 @@ namespace ConsoleApp2
                 {
                     label6.Text = "計算中 " + e.ProgressPercentage.ToString() + " %";
                 }
-                
+
             }
         }
 
@@ -80,21 +83,17 @@ namespace ConsoleApp2
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            
             OpenFileDialog f = new OpenFileDialog();
             if (f.ShowDialog() == DialogResult.OK)
             {
                 filePath = f.FileName;
-                bw.RunWorkerAsync();
             }
-
         }
         private void loadDataAndCompute()
         {
             initValueFromTable();
             createCompanyTableFromFile();
             computeAndWriteData();
-            computeRegression();
         }
         private void initValueFromTable()
         {
@@ -104,10 +103,15 @@ namespace ConsoleApp2
             {
                 File.Delete(output);
             }
-            string output2 = strPath + "compare-" + fileName;
+            string output2 = strPath + COMPARE + fileName;
             if (File.Exists(output2))
             {
                 File.Delete(output2);
+            }
+            string output3 = strPath + REGRESSION + fileName;
+            if (File.Exists(output3))
+            {
+                File.Delete(output3);
             }
             observation = Convert.ToInt32(textBox1.Text);
             skip = Convert.ToInt32(textBox2.Text);
@@ -136,7 +140,31 @@ namespace ConsoleApp2
             }
             sr.Close();
             int index = 0;
+            if (sizeFilePath.Length > 0)
+            {
+                sr = new StreamReader(sizeFilePath);
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string[] h = line.Split(',');
+                    priceSize = h.Length;
+                    double[] tempDouble = new double[priceSize];
+                    int priceIndex = 0;
+                    foreach (string t in h)
+                    {
+                        tempDouble[priceIndex] = Convert.ToDouble(t);
+                        priceIndex++;
+                    }
+                    companys[index].setCompanySize(tempDouble);
+                    index++;
+                    bw.ReportProgress(0);
+                }
+                sr.Close();
+            }
 
+
+
+
+            index = 0;
             foreach (Company c in companys)
             {
                 c.computeTop();
@@ -148,14 +176,19 @@ namespace ConsoleApp2
         private void computeAndWriteData()
         {
             string output = strPath + fileName;
-            string output2 = strPath +"compare-"+ fileName;
-            FileStream fs = File.Create(output);//new FileStream(strPath, FileMode.Open, FileAccess.Write);
+            string output2 = strPath + COMPARE + fileName;
+            string output3 = strPath + REGRESSION + fileName;
+            FileStream fs = File.Create(output);
             StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
             StringBuilder sb = new StringBuilder();
 
-            FileStream fs2 = File.Create(output2);//new FileStream(strPath, FileMode.Open, FileAccess.Write);
+            FileStream fs2 = File.Create(output2);
             StreamWriter sw2 = new StreamWriter(fs2, System.Text.Encoding.Default);
             StringBuilder sb2 = new StringBuilder();
+
+            FileStream fs3 = File.Create(output3);
+            StreamWriter sw3 = new StreamWriter(fs3, System.Text.Encoding.Default);
+            StringBuilder sb3 = new StringBuilder();
             int initIndex = 0;
             while (initIndex + observation + skip + holding < priceSize)
             {
@@ -173,85 +206,82 @@ namespace ConsoleApp2
                 }
                 tempCompanys.Sort();
                 int winner = (int)(tempCompanys.Count() * winnerP / 100);
-                Random d = new Random();
                 for (int j = 1; j <= winner; j++)
                 {
                     Company c = tempCompanys[tempCompanys.Count() - j];
-                    if (c.hasTop()) {
-                        if (c.getTop(initIndex + observation + skip - 1) >= top)
-                        {
-                            sw.Write(c.getRate() + ",");
-                            sw2.Write(c.getCompare() + ",");
-                        }
-                        regressionXs.Add(new RegressionX(c.getRemuneration(), c.companyPrice[initIndex + observation + skip - 1], 1, c.getTop(initIndex + observation + skip - 1) == 0 ? 1 : 0, c.getRate()));
-                    }
-                    else
+                    if (c.getTop(initIndex + observation - 1) >= top)
                     {
                         sw.Write(c.getRate() + ",");
                         sw2.Write(c.getCompare() + ",");
+                        regressionXs.Add(new RegressionX(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 1, 1, c.getRate()));
                     }
+                    else
+                    {
+                        regressionXs.Add(new RegressionX(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 1, 0, c.getRate()));
+                    }
+
                 }
-                for (int j = winner+1; j < tempCompanys.Count(); j++)
+                for (int j = winner + 1; j <= tempCompanys.Count(); j++)
                 {
                     Company c = tempCompanys[tempCompanys.Count() - j];
-                    if (c.hasTop())
-                    {
-                        if (c.getTop(initIndex + observation + skip - 1) >= top)
-                        {
-                            regressionXs.Add(new RegressionX(c.getRemuneration(), c.companyPrice[initIndex + observation + skip - 1], 0, c.getTop(initIndex + observation + skip - 1) == 0 ? 1 : 0, c.getRate()));
-                        }
-                    }
+                    regressionXs.Add(new RegressionX(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 0, 0, c.getRate()));
                 }
+                try
+                {
+                    double[] beta = computeRegression();
+                    for (int i = 0; i < RegressionX.Size; i++)
+                    {
+                        sw3.Write(beta[i] + ",");
+                    }
+                    sw3.Write("\n");
+                }
+                catch (Exception e) { }
+                regressionXs.Clear();
                 sw.Write("\n");
                 sw2.Write("\n");
                 initIndex++;
-                bw.ReportProgress((int)((double)initIndex * 100.0/(double)priceSize));
+                bw.ReportProgress((int)((double)initIndex * 100.0 / (double)priceSize));
             }
             sw.Close();
             sw2.Close();
+            sw3.Close();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             bw.RunWorkerAsync();
         }
-        private void computeRegression()
+
+        private void printAllRegressions()
         {
-            /*
             for (int i = 0; i < regressionXs.Count(); i++)
             {
-                Console.Write("regressionXs [" + i + "] : " );
+                Console.Write("[" + i + "]:");
                 for (int j = 0; j < RegressionX.Size; j++)
                 {
-                    Console.Write(regressionXs[i].x[j] + ", ");
+                    Console.Write(regressionXs[i].x[j] + ",");
                 }
+                Console.Write("y:" + regressionXs[i].y);
                 Console.WriteLine("");
             }
-            */
-            for (int i = 0; i < regressionXs.Count(); i++)
+            Console.WriteLine("RegressionX : " + regressionXs.Count());
+        }
+
+        private void printMatrix(double[][] matrix)
+        {
+            Console.Write("matrix:\n");
+            for (int i = 0; i < matrix.Length; i++)
             {
-                bool flag = false;
-                for (int j = 0; j < RegressionX.Size; j++)
+                for (int j = 0; j < matrix[i].Length; j++)
                 {
-                    if (Double.IsNaN(regressionXs[i].x[j]))
-                    {
-                        flag = true;
-                        break;
-                    }
+                    Console.Write(matrix[i][j] + ",");
                 }
-                if (flag)
-                {
-                    for (int j = 0; j < RegressionX.Size; j++)
-                    {
-                        Console.Write(regressionXs[i].x[j] + ", ");
-                    }
-                    Console.WriteLine("");
-                }
-
+                Console.Write("\n");
             }
+        }
 
-
-
+        private double[] computeRegression()
+        {
             double[][] temp;
             temp = new double[RegressionX.Size][];
             for (int i = 0; i < RegressionX.Size; i++)
@@ -267,28 +297,7 @@ namespace ConsoleApp2
                     temp[i][j] = ans;
                 }
             }
-            for (int i = 0; i < RegressionX.Size; i++)
-            {
-                for (int j = 0; j < RegressionX.Size; j++)
-                {
-                    Console.Write(temp[i][j]+ " ,");
-                }
-                Console.WriteLine("");
-            }
-
             double[][] inverse = InverseMatrix(temp);
-
-            /*
-            for (int i = 0; i < RegressionX.Size; i++)
-            {
-                for (int j = 0; j < RegressionX.Size; j++)
-                {
-                    Console.Write(", inverse[" + i + "][" + j + "] : " + inverse[i][j]);
-                }
-                Console.WriteLine("");
-            }
-            */
-
             double[][] multiple;
             multiple = new double[RegressionX.Size][];
             for (int i = 0; i < RegressionX.Size; i++)
@@ -302,14 +311,11 @@ namespace ConsoleApp2
                         ans += inverse[i][k] * regressionXs[j].x[k];
                     }
                     multiple[i][j] = ans;
-                    //Console.Write(", multiple[" + i + "][" + j + "] : " + multiple[i][j]);
                 }
-                //Console.WriteLine("");
             }
 
 
-            double[] beta;
-            beta = new double[RegressionX.Size];
+            double[] beta = new double[RegressionX.Size];
             for (int i = 0; i < RegressionX.Size; i++)
             {
                 double ans = 0.0;
@@ -318,9 +324,8 @@ namespace ConsoleApp2
                     ans += multiple[i][j] * regressionXs[j].y;
                 }
                 beta[i] = ans;
-                Console.WriteLine("beta[" + i +"] : " + beta[i]);
             }
-
+            return beta;
 
 
 
@@ -345,6 +350,7 @@ namespace ConsoleApp2
                     throw new Exception("matrix 必須为方陣");
                 }
             }
+
 
             //計算矩陣行列式的值
             double dDeterminant = Determinant(matrix);
@@ -417,14 +423,11 @@ namespace ConsoleApp2
             {
                 for (int j = 0; j < result.Length; j++)
                 {
-                    //存儲代數餘子式的矩陣（行、列數都比原矩陣少1）
                     double[][] temp = new double[result.Length - 1][];
                     for (int k = 0; k < result.Length - 1; k++)
                     {
                         temp[k] = new double[result[k].Length - 1];
                     }
-
-                    //生成代數餘子式
                     for (int x = 0; x < temp.Length; x++)
                     {
                         for (int y = 0; y < temp.Length; y++)
@@ -432,18 +435,19 @@ namespace ConsoleApp2
                             temp[x][y] = matrix[x < i ? x : x + 1][y < j ? y : y + 1];
                         }
                     }
-
-                    //Console.WriteLine("代數餘子式:");
-                    //PrintMatrix(temp);
-
                     result[j][i] = ((i + j) % 2 == 0 ? 1 : -1) * Determinant(temp);
                 }
             }
-
-            //Console.WriteLine("伴隨矩陣：");
-            //PrintMatrix(result);
-
             return result;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog f = new OpenFileDialog();
+            if (f.ShowDialog() == DialogResult.OK)
+            {
+                sizeFilePath = f.FileName;
+            }
         }
     }
 }

@@ -12,12 +12,13 @@ namespace ConsoleApp2
         double compare = 0;
         double rateOfReturn = -1;
         public double[] companyPrice;
+        public double[] companySize;
         int initIndex = 0;
         int[] top;
-        double size = 0.0;
         public Company(double[] companyPrice, int observation, int holding, int skip)
         {
             this.companyPrice = companyPrice;
+            this.companySize = new double[companyPrice.Length];
             computeCompareValue(this.companyPrice, observation);
             computeRateOfReturn(this.companyPrice, observation, holding, skip);
             computeRemuneration(this.companyPrice, observation, holding, skip);
@@ -79,10 +80,9 @@ namespace ConsoleApp2
             rateOfReturn = (companyPrice[last] - companyPrice[first]) / companyPrice[first];
         }
         private void computeRemuneration(double[] companyPrice, int observation, int holding, int skip) {
-            int last = Math.Min((initIndex + observation + skip + holding - 2), companyPrice.Length);
-            int first = Math.Max(Math.Min(last-4, companyPrice.Length),0);
+            int last = Math.Min((initIndex + observation + skip - 1), companyPrice.Length);
+            int first = Math.Max(Math.Min(last-skip, companyPrice.Length),0);
             remuneration = (companyPrice[last] - companyPrice[first]) / companyPrice[first];
-            if (companyPrice[first] == 0) remuneration = 0;
         }
         public double getRate()
         {
@@ -96,10 +96,7 @@ namespace ConsoleApp2
         {
             return remuneration;
         }
-        public double getSize()
-        {
-            return size;
-        }
+
         public string getString()
         {
             return "compare :" + compare + ", rate : " + rateOfReturn;
@@ -115,6 +112,14 @@ namespace ConsoleApp2
                 }
             }
             return false;
+        }
+
+        public void setCompanySize(double[] companySize) {
+            this.companySize = companySize;
+        }
+
+        public double[] getCompanySize() {
+            return companySize;
         }
     }
 }

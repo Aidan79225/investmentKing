@@ -45,13 +45,14 @@
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.textBox6 = new System.Windows.Forms.TextBox();
+            this.button3 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(183, 575);
+            this.button1.Location = new System.Drawing.Point(124, 573);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(133, 40);
+            this.button1.Size = new System.Drawing.Size(114, 42);
             this.button1.TabIndex = 1;
             this.button1.Text = "開啟輸入檔案";
             this.button1.UseVisualStyleBackColor = true;
@@ -127,7 +128,7 @@
             // 
             this.button2.Location = new System.Drawing.Point(17, 573);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(132, 42);
+            this.button2.Size = new System.Drawing.Size(101, 42);
             this.button2.TabIndex = 9;
             this.button2.Text = "計算";
             this.button2.UseVisualStyleBackColor = true;
@@ -208,11 +209,22 @@
             this.textBox6.TabIndex = 18;
             this.textBox6.Text = "30";
             // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(244, 573);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(97, 42);
+            this.button3.TabIndex = 19;
+            this.button3.Text = "開啟Size資料表";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(353, 662);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.textBox6);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.textBox5);
@@ -256,5 +268,6 @@
         private System.Windows.Forms.TextBox textBox5;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox textBox6;
+        private System.Windows.Forms.Button button3;
     }
 }
