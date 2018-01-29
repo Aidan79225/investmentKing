@@ -46,6 +46,11 @@
             this.label8 = new System.Windows.Forms.Label();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
+            this.biasCheckBox = new System.Windows.Forms.CheckBox();
+            this.remunerationCheckBox = new System.Windows.Forms.CheckBox();
+            this.sizeCheckBox = new System.Windows.Forms.CheckBox();
+            this.winnerCheckBox = new System.Windows.Forms.CheckBox();
+            this.goodWinnerCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // button1
@@ -219,11 +224,76 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
+            // biasCheckBox
+            // 
+            this.biasCheckBox.AutoSize = true;
+            this.biasCheckBox.Checked = true;
+            this.biasCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.biasCheckBox.Location = new System.Drawing.Point(17, 637);
+            this.biasCheckBox.Name = "biasCheckBox";
+            this.biasCheckBox.Size = new System.Drawing.Size(48, 16);
+            this.biasCheckBox.TabIndex = 20;
+            this.biasCheckBox.Text = "偏差";
+            this.biasCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // remunerationCheckBox
+            // 
+            this.remunerationCheckBox.AutoSize = true;
+            this.remunerationCheckBox.Checked = true;
+            this.remunerationCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.remunerationCheckBox.Location = new System.Drawing.Point(17, 660);
+            this.remunerationCheckBox.Name = "remunerationCheckBox";
+            this.remunerationCheckBox.Size = new System.Drawing.Size(60, 16);
+            this.remunerationCheckBox.TabIndex = 21;
+            this.remunerationCheckBox.Text = "報酬率";
+            this.remunerationCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // sizeCheckBox
+            // 
+            this.sizeCheckBox.AutoSize = true;
+            this.sizeCheckBox.Checked = true;
+            this.sizeCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.sizeCheckBox.Location = new System.Drawing.Point(17, 683);
+            this.sizeCheckBox.Name = "sizeCheckBox";
+            this.sizeCheckBox.Size = new System.Drawing.Size(43, 16);
+            this.sizeCheckBox.TabIndex = 22;
+            this.sizeCheckBox.Text = "Size";
+            this.sizeCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // winnerCheckBox
+            // 
+            this.winnerCheckBox.AutoSize = true;
+            this.winnerCheckBox.Checked = true;
+            this.winnerCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.winnerCheckBox.Location = new System.Drawing.Point(17, 705);
+            this.winnerCheckBox.Name = "winnerCheckBox";
+            this.winnerCheckBox.Size = new System.Drawing.Size(59, 16);
+            this.winnerCheckBox.TabIndex = 23;
+            this.winnerCheckBox.Text = "Winner";
+            this.winnerCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // goodWinnerCheckBox
+            // 
+            this.goodWinnerCheckBox.AutoSize = true;
+            this.goodWinnerCheckBox.Checked = true;
+            this.goodWinnerCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.goodWinnerCheckBox.Location = new System.Drawing.Point(17, 727);
+            this.goodWinnerCheckBox.Name = "goodWinnerCheckBox";
+            this.goodWinnerCheckBox.Size = new System.Drawing.Size(85, 16);
+            this.goodWinnerCheckBox.TabIndex = 24;
+            this.goodWinnerCheckBox.Text = "GoodWinner";
+            this.goodWinnerCheckBox.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(353, 662);
+            this.ClientSize = new System.Drawing.Size(353, 793);
+            this.Controls.Add(this.goodWinnerCheckBox);
+            this.Controls.Add(this.winnerCheckBox);
+            this.Controls.Add(this.sizeCheckBox);
+            this.Controls.Add(this.remunerationCheckBox);
+            this.Controls.Add(this.biasCheckBox);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.textBox6);
             this.Controls.Add(this.label8);
@@ -269,5 +339,10 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox textBox6;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.CheckBox biasCheckBox;
+        private System.Windows.Forms.CheckBox remunerationCheckBox;
+        private System.Windows.Forms.CheckBox sizeCheckBox;
+        private System.Windows.Forms.CheckBox winnerCheckBox;
+        private System.Windows.Forms.CheckBox goodWinnerCheckBox;
     }
 }

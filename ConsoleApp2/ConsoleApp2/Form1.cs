@@ -15,7 +15,7 @@ namespace ConsoleApp2
     public partial class Form1 : Form
     {
         List<Company> companys = new List<Company>();
-        List<RegressionX> regressionXs = new List<RegressionX>();
+        List<RegressionRow> regressionXs = new List<RegressionRow>();
         int observation = 12;
         int holding = 1;
         int skip = 0;
@@ -118,6 +118,21 @@ namespace ConsoleApp2
             holding = Convert.ToInt32(textBox3.Text);
             top = Convert.ToInt32(textBox5.Text);
             winnerP = Convert.ToInt32(textBox6.Text);
+            setRegressionW();
+        }
+
+        private void setRegressionW()
+        {
+            RegressionRow.use[0] = biasCheckBox.Checked;
+            RegressionRow.use[1] = remunerationCheckBox.Checked;
+            RegressionRow.use[2] = sizeCheckBox.Checked;
+            RegressionRow.use[3] = winnerCheckBox.Checked;
+            RegressionRow.use[4] = goodWinnerCheckBox.Checked;
+            int count = 0;
+            foreach (bool use in RegressionRow.use) {
+                if (use) count++;
+            }
+            RegressionRow.Size = count;
         }
         private void createCompanyTableFromFile()
         {
@@ -189,6 +204,13 @@ namespace ConsoleApp2
             FileStream fs3 = File.Create(output3);
             StreamWriter sw3 = new StreamWriter(fs3, System.Text.Encoding.Default);
             StringBuilder sb3 = new StringBuilder();
+
+            for (int i = 0; i < RegressionRow.Size; i++)
+            {
+                sw3.Write(RegressionRow.tag[i] + ",");
+            }
+            sw3.Write("\n");
+
             int initIndex = 0;
             while (initIndex + observation + skip + holding < priceSize)
             {
@@ -213,23 +235,23 @@ namespace ConsoleApp2
                     {
                         sw.Write(c.getRate() + ",");
                         sw2.Write(c.getCompare() + ",");
-                        regressionXs.Add(new RegressionX(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 1, 1, c.getRate()));
+                        regressionXs.Add(new RegressionRow(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 1, 1, c.getRate()));
                     }
                     else
                     {
-                        regressionXs.Add(new RegressionX(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 1, 0, c.getRate()));
+                        regressionXs.Add(new RegressionRow(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 1, 0, c.getRate()));
                     }
 
                 }
                 for (int j = winner + 1; j <= tempCompanys.Count(); j++)
                 {
                     Company c = tempCompanys[tempCompanys.Count() - j];
-                    regressionXs.Add(new RegressionX(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 0, 0, c.getRate()));
+                    regressionXs.Add(new RegressionRow(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 0, 0, c.getRate()));
                 }
                 try
                 {
                     double[] beta = computeRegression();
-                    for (int i = 0; i < RegressionX.Size; i++)
+                    for (int i = 0; i < RegressionRow.Size; i++)
                     {
                         sw3.Write(beta[i] + ",");
                     }
@@ -257,7 +279,7 @@ namespace ConsoleApp2
             for (int i = 0; i < regressionXs.Count(); i++)
             {
                 Console.Write("[" + i + "]:");
-                for (int j = 0; j < RegressionX.Size; j++)
+                for (int j = 0; j < RegressionRow.Size; j++)
                 {
                     Console.Write(regressionXs[i].x[j] + ",");
                 }
@@ -283,11 +305,11 @@ namespace ConsoleApp2
         private double[] computeRegression()
         {
             double[][] temp;
-            temp = new double[RegressionX.Size][];
-            for (int i = 0; i < RegressionX.Size; i++)
+            temp = new double[RegressionRow.Size][];
+            for (int i = 0; i < RegressionRow.Size; i++)
             {
-                temp[i] = new double[RegressionX.Size];
-                for (int j = 0; j < RegressionX.Size; j++)
+                temp[i] = new double[RegressionRow.Size];
+                for (int j = 0; j < RegressionRow.Size; j++)
                 {
                     double ans = 0.0;
                     for (int k = 0; k < regressionXs.Count(); k++)
@@ -299,14 +321,14 @@ namespace ConsoleApp2
             }
             double[][] inverse = InverseMatrix(temp);
             double[][] multiple;
-            multiple = new double[RegressionX.Size][];
-            for (int i = 0; i < RegressionX.Size; i++)
+            multiple = new double[RegressionRow.Size][];
+            for (int i = 0; i < RegressionRow.Size; i++)
             {
                 multiple[i] = new double[regressionXs.Count()];
                 for (int j = 0; j < regressionXs.Count(); j++)
                 {
                     double ans = 0.0;
-                    for (int k = 0; k < RegressionX.Size; k++)
+                    for (int k = 0; k < RegressionRow.Size; k++)
                     {
                         ans += inverse[i][k] * regressionXs[j].x[k];
                     }
@@ -315,8 +337,8 @@ namespace ConsoleApp2
             }
 
 
-            double[] beta = new double[RegressionX.Size];
-            for (int i = 0; i < RegressionX.Size; i++)
+            double[] beta = new double[RegressionRow.Size];
+            for (int i = 0; i < RegressionRow.Size; i++)
             {
                 double ans = 0.0;
                 for (int j = 0; j < regressionXs.Count(); j++)
@@ -449,5 +471,7 @@ namespace ConsoleApp2
                 sizeFilePath = f.FileName;
             }
         }
+
+
     }
 }
