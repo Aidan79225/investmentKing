@@ -23,12 +23,12 @@ namespace ConsoleApp2
             computeRateOfReturn(this.companyPrice, observation, holding, skip);
             computeRemuneration(this.companyPrice, observation, holding, skip);
         }
-        public void reload(int initIndex, int observation, int holding, int skip)
+        public void reload(int initIndex, int observation, int holding, int skip,int skipForRegression)
         {
             this.initIndex = initIndex;
             computeCompareValue(this.companyPrice, observation);
             computeRateOfReturn(this.companyPrice, observation, holding, skip);
-            computeRemuneration(this.companyPrice, observation, holding, skip);
+            computeRemuneration(this.companyPrice, observation, holding, skipForRegression);
         }
         public void computeTop()
         {
@@ -79,9 +79,9 @@ namespace ConsoleApp2
             int last = Math.Min((initIndex + observation + skip + holding - 1), companyPrice.Length);
             rateOfReturn = (companyPrice[last] - companyPrice[first]) / companyPrice[first];
         }
-        private void computeRemuneration(double[] companyPrice, int observation, int holding, int skip) {
-            int last = Math.Min((initIndex + observation + skip - 1), companyPrice.Length);
-            int first = Math.Max(Math.Min(last-skip, companyPrice.Length),0);
+        private void computeRemuneration(double[] companyPrice, int observation, int holding, int skipForRegression) {
+            int last = Math.Min((initIndex + observation + skipForRegression - 1), companyPrice.Length);
+            int first = Math.Max(Math.Min(last- skipForRegression, companyPrice.Length),0);
             remuneration = (companyPrice[last] - companyPrice[first]) / companyPrice[first];
         }
         public double getRate()

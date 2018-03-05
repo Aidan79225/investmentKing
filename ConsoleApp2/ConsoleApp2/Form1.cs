@@ -22,6 +22,7 @@ namespace ConsoleApp2
         int priceSize = 4696;
         int top = 0;
         int winnerP = 30;
+        int skipForRegression = 0;
         string filePath = "";
         string sizeFilePath = "";
         string strPath = @"c:\temp\";
@@ -118,6 +119,7 @@ namespace ConsoleApp2
             holding = Convert.ToInt32(textBox3.Text);
             top = Convert.ToInt32(textBox5.Text);
             winnerP = Convert.ToInt32(textBox6.Text);
+            skipForRegression = Convert.ToInt32(textBox7.Text);
             setRegressionW();
         }
 
@@ -216,7 +218,7 @@ namespace ConsoleApp2
             {
                 foreach (Company c in companys)
                 {
-                    c.reload(initIndex, observation, holding, skip);
+                    c.reload(initIndex, observation, holding, skip, skipForRegression);
                 }
                 List<Company> tempCompanys = new List<Company>();
                 foreach (Company c in companys)

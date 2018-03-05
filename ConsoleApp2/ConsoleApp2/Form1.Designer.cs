@@ -51,6 +51,8 @@
             this.sizeCheckBox = new System.Windows.Forms.CheckBox();
             this.winnerCheckBox = new System.Windows.Forms.CheckBox();
             this.goodWinnerCheckBox = new System.Windows.Forms.CheckBox();
+            this.textBox7 = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // button1
@@ -161,16 +163,16 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(17, 479);
+            this.progressBar1.Location = new System.Drawing.Point(17, 528);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(299, 23);
+            this.progressBar1.Size = new System.Drawing.Size(324, 23);
             this.progressBar1.TabIndex = 12;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("新細明體", 20F);
-            this.label6.Location = new System.Drawing.Point(52, 433);
+            this.label6.Location = new System.Drawing.Point(145, 486);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(66, 27);
             this.label6.TabIndex = 13;
@@ -189,7 +191,7 @@
             // textBox5
             // 
             this.textBox5.Font = new System.Drawing.Font("新細明體", 20F);
-            this.textBox5.Location = new System.Drawing.Point(183, 311);
+            this.textBox5.Location = new System.Drawing.Point(183, 314);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(133, 39);
             this.textBox5.TabIndex = 15;
@@ -233,7 +235,7 @@
             this.biasCheckBox.Name = "biasCheckBox";
             this.biasCheckBox.Size = new System.Drawing.Size(48, 16);
             this.biasCheckBox.TabIndex = 20;
-            this.biasCheckBox.Text = "偏差";
+            this.biasCheckBox.Text = "截距";
             this.biasCheckBox.UseVisualStyleBackColor = true;
             // 
             // remunerationCheckBox
@@ -284,11 +286,32 @@
             this.goodWinnerCheckBox.Text = "GoodWinner";
             this.goodWinnerCheckBox.UseVisualStyleBackColor = true;
             // 
+            // textBox7
+            // 
+            this.textBox7.Font = new System.Drawing.Font("新細明體", 20F);
+            this.textBox7.Location = new System.Drawing.Point(183, 430);
+            this.textBox7.Name = "textBox7";
+            this.textBox7.Size = new System.Drawing.Size(133, 39);
+            this.textBox7.TabIndex = 25;
+            this.textBox7.Text = "0";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("新細明體", 20F);
+            this.label9.Location = new System.Drawing.Point(5, 433);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(172, 27);
+            this.label9.TabIndex = 26;
+            this.label9.Text = "RegressionSkip";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(353, 793);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.textBox7);
             this.Controls.Add(this.goodWinnerCheckBox);
             this.Controls.Add(this.winnerCheckBox);
             this.Controls.Add(this.sizeCheckBox);
@@ -344,5 +367,7 @@
         private System.Windows.Forms.CheckBox sizeCheckBox;
         private System.Windows.Forms.CheckBox winnerCheckBox;
         private System.Windows.Forms.CheckBox goodWinnerCheckBox;
+        private System.Windows.Forms.TextBox textBox7;
+        private System.Windows.Forms.Label label9;
     }
 }

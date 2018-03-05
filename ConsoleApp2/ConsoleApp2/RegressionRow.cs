@@ -14,7 +14,7 @@ namespace compute
         public static int Size = 5;
         public static bool[] use = new bool[maxSize];
         public static string[] tag = {
-            "Bias",
+            "Constant",
             "Remuneration",
             "Size",
             "Winner",
