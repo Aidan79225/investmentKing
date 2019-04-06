@@ -259,7 +259,13 @@ namespace ConsoleApp2
                     }
                     sw3.Write("\n");
                 }
-                catch (Exception e) { }
+                catch (Exception e) {
+                    for (int i = 0; i < RegressionRow.Size; i++)
+                    {
+                        sw3.Write( ",");
+                    }
+                    sw3.Write("\n");
+                }
                 regressionXs.Clear();
                 sw.Write("\n");
                 sw2.Write("\n");
