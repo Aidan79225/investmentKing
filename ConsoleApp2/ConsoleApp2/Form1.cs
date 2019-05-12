@@ -125,6 +125,7 @@ namespace ConsoleApp2
             RegressionRow.use[1] = remunerationCheckBox.Checked;
             RegressionRow.use[2] = sizeCheckBox.Checked;
             RegressionRow.use[3] = winnerCheckBox.Checked;
+            RegressionRow.use[4] = RegressionTechnicalAnalysisCheckBox.Checked;
             RegressionRow.computeEnableSize();
         }
         private void createCompanyTableFromFile()
@@ -218,12 +219,14 @@ namespace ConsoleApp2
                         sw.Write(c.getRate() + ",");
                         sw2.Write(c.getCompare() + ",");
                     }
-                    regressionXs.Add(new RegressionRow(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 1, c.getRate()));
+                    double isTa = c.shortAvg > c.longAvg ? 1.0d : 0.0d;
+                    regressionXs.Add(new RegressionRow(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 1, isTa, c.getRate()));
                 }
                 for (int j = winner + 1; j <= tempCompanys.Count(); j++)
                 {
                     Company c = tempCompanys[tempCompanys.Count() - j];
-                    regressionXs.Add(new RegressionRow(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 0, c.getRate()));
+                    double isTa = c.shortAvg > c.longAvg ? 1.0d : 0.0d;
+                    regressionXs.Add(new RegressionRow(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 0, isTa, c.getRate()));
                 }
                 try
                 {

@@ -57,6 +57,7 @@
             this.TechnicalAnalysisCheckBox = new System.Windows.Forms.CheckBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
+            this.RegressionTechnicalAnalysisCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // button1
@@ -321,7 +322,7 @@
             this.TechnicalAnalysisCheckBox.AutoSize = true;
             this.TechnicalAnalysisCheckBox.Checked = true;
             this.TechnicalAnalysisCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.TechnicalAnalysisCheckBox.Location = new System.Drawing.Point(109, 675);
+            this.TechnicalAnalysisCheckBox.Location = new System.Drawing.Point(109, 691);
             this.TechnicalAnalysisCheckBox.Name = "TechnicalAnalysisCheckBox";
             this.TechnicalAnalysisCheckBox.Size = new System.Drawing.Size(111, 16);
             this.TechnicalAnalysisCheckBox.TabIndex = 31;
@@ -342,17 +343,30 @@
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("新細明體", 20F);
-            this.label12.Location = new System.Drawing.Point(52, 633);
+            this.label12.Location = new System.Drawing.Point(52, 649);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(224, 27);
             this.label12.TabIndex = 33;
             this.label12.Text = "Computing Settings:";
+            // 
+            // RegressionTechnicalAnalysisCheckBox
+            // 
+            this.RegressionTechnicalAnalysisCheckBox.AutoSize = true;
+            this.RegressionTechnicalAnalysisCheckBox.Checked = true;
+            this.RegressionTechnicalAnalysisCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.RegressionTechnicalAnalysisCheckBox.Location = new System.Drawing.Point(109, 617);
+            this.RegressionTechnicalAnalysisCheckBox.Name = "RegressionTechnicalAnalysisCheckBox";
+            this.RegressionTechnicalAnalysisCheckBox.Size = new System.Drawing.Size(111, 16);
+            this.RegressionTechnicalAnalysisCheckBox.TabIndex = 34;
+            this.RegressionTechnicalAnalysisCheckBox.Text = "Technical Analysis";
+            this.RegressionTechnicalAnalysisCheckBox.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(353, 793);
+            this.Controls.Add(this.RegressionTechnicalAnalysisCheckBox);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.TechnicalAnalysisCheckBox);
@@ -420,5 +434,6 @@
         private System.Windows.Forms.CheckBox TechnicalAnalysisCheckBox;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.CheckBox RegressionTechnicalAnalysisCheckBox;
     }
 }
