@@ -16,13 +16,16 @@ namespace ConsoleApp2
     {
         List<Company> companys = new List<Company>();
         List<RegressionRow> regressionXs = new List<RegressionRow>();
+        bool useTA = false;
         int observation = 12;
         int holding = 1;
         int skip = 0;
         int priceSize = 4696;
-        int top = 0;
         int winnerP = 30;
         int skipForRegression = 0;
+        int shortDay = 5;
+        int longDay = 10;
+
         string filePath = "";
         string sizeFilePath = "";
         string strPath = @"c:\temp\";
@@ -48,7 +51,6 @@ namespace ConsoleApp2
             bw.DoWork += new DoWorkEventHandler(bw_DoWork);
             bw.ProgressChanged += new ProgressChangedEventHandler(bw_ProgressChanged);
             bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
-
         }
 
         private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -56,7 +58,7 @@ namespace ConsoleApp2
             label6.Text = "完成";
             progressBar1.Value = 100;
         }
-        string type = "top";
+
         private void bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             progressBar1.Value = e.ProgressPercentage;
@@ -66,15 +68,7 @@ namespace ConsoleApp2
             }
             else
             {
-                if (type.Equals("top"))
-                {
-                    label6.Text = "讀取TOP中 " + e.ProgressPercentage.ToString() + " %";
-                }
-                else
-                {
-                    label6.Text = "計算中 " + e.ProgressPercentage.ToString() + " %";
-                }
-
+                label6.Text = "計算中 " + e.ProgressPercentage.ToString() + " %";
             }
         }
 
@@ -117,9 +111,11 @@ namespace ConsoleApp2
             observation = Convert.ToInt32(textBox1.Text);
             skip = Convert.ToInt32(textBox2.Text);
             holding = Convert.ToInt32(textBox3.Text);
-            top = Convert.ToInt32(textBox5.Text);
             winnerP = Convert.ToInt32(textBox6.Text);
             skipForRegression = Convert.ToInt32(textBox7.Text);
+            shortDay = Convert.ToInt32(taShortTextBox.Text);
+            longDay = Convert.ToInt32(taLongTextBox.Text);
+            useTA = TechnicalAnalysisCheckBox.Checked;
             setRegressionW();
         }
 
@@ -129,12 +125,7 @@ namespace ConsoleApp2
             RegressionRow.use[1] = remunerationCheckBox.Checked;
             RegressionRow.use[2] = sizeCheckBox.Checked;
             RegressionRow.use[3] = winnerCheckBox.Checked;
-            RegressionRow.use[4] = goodWinnerCheckBox.Checked;
-            int count = 0;
-            foreach (bool use in RegressionRow.use) {
-                if (use) count++;
-            }
-            RegressionRow.Size = count;
+            RegressionRow.computeEnableSize();
         }
         private void createCompanyTableFromFile()
         {
@@ -152,7 +143,7 @@ namespace ConsoleApp2
                     tempDouble[priceIndex] = Convert.ToDouble(t);
                     priceIndex++;
                 }
-                companys.Add(new Company(tempDouble, observation, holding, skip));
+                companys.Add(new Company(tempDouble));
                 bw.ReportProgress(0);
             }
             sr.Close();
@@ -177,17 +168,6 @@ namespace ConsoleApp2
                 }
                 sr.Close();
             }
-
-
-
-
-            index = 0;
-            foreach (Company c in companys)
-            {
-                c.computeTop();
-                bw.ReportProgress((int)((double)index * 100.0 / (double)companys.Count()));
-            }
-            type = "";
 
         }
         private void computeAndWriteData()
@@ -218,7 +198,7 @@ namespace ConsoleApp2
             {
                 foreach (Company c in companys)
                 {
-                    c.reload(initIndex, observation, holding, skip, skipForRegression);
+                    c.reload(initIndex, observation, holding, skip, skipForRegression, shortDay, longDay);
                 }
                 List<Company> tempCompanys = new List<Company>();
                 foreach (Company c in companys)
@@ -233,22 +213,17 @@ namespace ConsoleApp2
                 for (int j = 1; j <= winner; j++)
                 {
                     Company c = tempCompanys[tempCompanys.Count() - j];
-                    if (c.getTop(initIndex + observation - 1) >= top)
+                    if (!useTA || c.shortAvg > c.longAvg)
                     {
                         sw.Write(c.getRate() + ",");
                         sw2.Write(c.getCompare() + ",");
-                        regressionXs.Add(new RegressionRow(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 1, 1, c.getRate()));
                     }
-                    else
-                    {
-                        regressionXs.Add(new RegressionRow(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 1, 0, c.getRate()));
-                    }
-
+                    regressionXs.Add(new RegressionRow(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 1, c.getRate()));
                 }
                 for (int j = winner + 1; j <= tempCompanys.Count(); j++)
                 {
                     Company c = tempCompanys[tempCompanys.Count() - j];
-                    regressionXs.Add(new RegressionRow(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 0, 0, c.getRate()));
+                    regressionXs.Add(new RegressionRow(c.getRemuneration(), c.companySize[initIndex + observation + skip - 1], 0, c.getRate()));
                 }
                 try
                 {
@@ -479,7 +454,5 @@ namespace ConsoleApp2
                 sizeFilePath = f.FileName;
             }
         }
-
-
     }
 }

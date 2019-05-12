@@ -14,47 +14,24 @@ namespace ConsoleApp2
         public double[] companyPrice;
         public double[] companySize;
         int initIndex = 0;
-        int[] top;
-        public Company(double[] companyPrice, int observation, int holding, int skip)
+        public double shortAvg = 0.0;
+        public double longAvg = 0.0;
+
+        public Company(double[] companyPrice)
         {
             this.companyPrice = companyPrice;
             this.companySize = new double[companyPrice.Length];
-            computeCompareValue(this.companyPrice, observation);
-            computeRateOfReturn(this.companyPrice, observation, holding, skip);
-            computeRemuneration(this.companyPrice, observation, holding, skip);
         }
-        public void reload(int initIndex, int observation, int holding, int skip,int skipForRegression)
+
+        public void reload(int initIndex, int observation, int holding, int skip,int skipForRegression, int shortDay, int longDay)
         {
             this.initIndex = initIndex;
             computeCompareValue(this.companyPrice, observation);
             computeRateOfReturn(this.companyPrice, observation, holding, skip);
             computeRemuneration(this.companyPrice, observation, holding, skipForRegression);
+            computeTA(initIndex, shortDay, longDay);
         }
-        public void computeTop()
-        {
-            if (companyPrice.Length == 0) return;
-            top = new int[companyPrice.Length];
-            top[0] = 0;
-            for (int i = 1 ; i< companyPrice.Length ; i++)
-            {
-                if (companyPrice[i] > companyPrice[i-1] )
-                {
-                    top[i] = top[i - 1] + 1;
-                }
-                else
-                {
-                    top[i] = 0;
-                }
-            }
-        }
-        public int getTop(int index)
-        {
-            return top[index];
-        }
-        public bool hasTop()
-        {
-            return top != null && top.Count() > 0;
-        }
+
         int IComparable<Company>.CompareTo(Company other)
         {
             return compare - other.compare > 0 ? 1 : compare - other.compare == 0 ? 0 : -1;
@@ -83,6 +60,23 @@ namespace ConsoleApp2
             int last = Math.Min((initIndex + observation + skipForRegression - 1), companyPrice.Length);
             int first = Math.Max(Math.Min(last- skipForRegression, companyPrice.Length),0);
             remuneration = (companyPrice[last] - companyPrice[first]) / companyPrice[first];
+        }
+
+        private void computeTA(int initIndex, int shortDay, int longDay)
+        {
+            shortAvg = 0.0;
+            for (int i = 0; i < shortDay && initIndex - i >= 0; i++)
+            {
+                shortAvg += companyPrice[initIndex - i];
+            }
+            shortAvg = shortAvg / shortDay;
+
+            longAvg = 0.0;
+            for (int i = 0; i < longDay && initIndex - i >= 0; i++)
+            {
+                longAvg += companyPrice[initIndex - i];
+            }
+            longAvg = longAvg / longDay;
         }
         public double getRate()
         {
@@ -116,10 +110,6 @@ namespace ConsoleApp2
 
         public void setCompanySize(double[] companySize) {
             this.companySize = companySize;
-        }
-
-        public double[] getCompanySize() {
-            return companySize;
         }
     }
 }
